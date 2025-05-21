@@ -1,12 +1,51 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import WalletManager from '@/components/Dashboard/WalletManager';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const Wallets = () => {
+  const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
+  const [isWalletDetailsOpen, setIsWalletDetailsOpen] = useState(false);
+  
+  // Sample wallet data
+  const walletDetails = {
+    'TYuP...D7W1': {
+      name: 'Main Wallet',
+      address: 'TYuPDN4WJYmzAtF9VXTTsSFJQGqJPND7W1',
+      tokens: [
+        { symbol: 'USDT', amount: '10,000', network: 'TRC20' },
+        { symbol: 'TRX', amount: '5,000', network: 'TRX' },
+        { symbol: 'BTC', amount: '0.05', network: 'BTC' }
+      ]
+    },
+    '0x89...3e7': {
+      name: 'Test Wallet',
+      address: '0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7',
+      tokens: [
+        { symbol: 'ETH', amount: '5.2', network: 'ERC20' },
+        { symbol: 'USDT', amount: '2,500', network: 'ERC20' },
+        { symbol: 'USDC', amount: '1,000', network: 'ERC20' }
+      ]
+    },
+    'bc1q...wlh': {
+      name: 'Cold Storage',
+      address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+      tokens: [
+        { symbol: 'BTC', amount: '0.3', network: 'BTC' }
+      ]
+    }
+  };
+
+  const handleViewDetails = (walletId: string) => {
+    setSelectedWallet(walletId);
+    setIsWalletDetailsOpen(true);
+  };
+
   return (
     <DashboardLayout>
       <div className="mb-6">
@@ -50,7 +89,14 @@ const Wallets = () => {
                         <span>TRX</span>
                         <span className="font-semibold">5,000</span>
                       </div>
-                      <Button size="sm" className="w-full mt-2" variant="outline">View Details</Button>
+                      <Button 
+                        size="sm" 
+                        className="w-full mt-2" 
+                        variant="outline"
+                        onClick={() => handleViewDetails('TYuP...D7W1')}
+                      >
+                        View Details
+                      </Button>
                     </CardContent>
                   </Card>
                   
@@ -67,7 +113,14 @@ const Wallets = () => {
                         <span>USDT (ERC20)</span>
                         <span className="font-semibold">2,500</span>
                       </div>
-                      <Button size="sm" className="w-full mt-2" variant="outline">View Details</Button>
+                      <Button 
+                        size="sm" 
+                        className="w-full mt-2" 
+                        variant="outline"
+                        onClick={() => handleViewDetails('0x89...3e7')}
+                      >
+                        View Details
+                      </Button>
                     </CardContent>
                   </Card>
                   
@@ -80,7 +133,14 @@ const Wallets = () => {
                         <span>BTC</span>
                         <span className="font-semibold">0.3</span>
                       </div>
-                      <Button size="sm" className="w-full mt-2" variant="outline">View Details</Button>
+                      <Button 
+                        size="sm" 
+                        className="w-full mt-2" 
+                        variant="outline"
+                        onClick={() => handleViewDetails('bc1q...wlh')}
+                      >
+                        View Details
+                      </Button>
                     </CardContent>
                   </Card>
                 </div>
@@ -89,6 +149,56 @@ const Wallets = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Wallet Details Dialog */}
+      <Dialog open={isWalletDetailsOpen} onOpenChange={setIsWalletDetailsOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedWallet && walletDetails[selectedWallet as keyof typeof walletDetails].name} Details
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedWallet && (
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Wallet Address:</p>
+                <p className="font-mono text-sm break-all border p-2 rounded-md bg-muted/20">
+                  {walletDetails[selectedWallet as keyof typeof walletDetails].address}
+                </p>
+              </div>
+              
+              <div>
+                <h3 className="font-medium mb-2">Token Balances</h3>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Token</TableHead>
+                      <TableHead>Network</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {walletDetails[selectedWallet as keyof typeof walletDetails].tokens.map((token, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell>{token.symbol}</TableCell>
+                        <TableCell>{token.network}</TableCell>
+                        <TableCell className="text-right font-medium">{token.amount}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              
+              <div className="flex justify-end mt-4">
+                <Button variant="outline" onClick={() => setIsWalletDetailsOpen(false)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };
