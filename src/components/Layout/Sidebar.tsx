@@ -12,7 +12,7 @@ import {
 import { Wallet, Plus, BarChart, ExternalLink, Settings } from 'lucide-react';
 
 const AppSidebar = () => {
-  const { collapsed } = useSidebar();
+  const sidebar = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
 
@@ -32,8 +32,8 @@ const AppSidebar = () => {
 
   return (
     <Sidebar
-      className={`h-screen ${collapsed ? 'w-16' : 'w-64'} border-r border-border bg-background`}
-      collapsible
+      className={`h-screen ${sidebar.state === 'collapsed' ? 'w-16' : 'w-64'} border-r border-border bg-background`}
+      collapsible="icon"
     >
       <SidebarContent className="pt-4">
         <SidebarMenu>
@@ -41,8 +41,8 @@ const AppSidebar = () => {
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>
                 <NavLink to={item.path} end className={getNavClass}>
-                  <item.icon className={`h-5 w-5 ${!collapsed && "mr-2"}`} />
-                  {!collapsed && <span>{item.title}</span>}
+                  <item.icon className={`h-5 w-5 ${sidebar.state !== 'collapsed' && "mr-2"}`} />
+                  {sidebar.state !== 'collapsed' && <span>{item.title}</span>}
                 </NavLink>
               </SidebarMenuButton>
             </SidebarMenuItem>

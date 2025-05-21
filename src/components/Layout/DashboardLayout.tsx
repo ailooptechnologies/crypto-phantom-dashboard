@@ -10,7 +10,7 @@ interface DashboardLayoutProps {
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
-    <SidebarProvider collapsedWidth={64}>
+    <SidebarProvider>
       <div className="min-h-screen w-full bg-background">
         <Header />
         <div className="flex w-full">
