@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -48,9 +47,7 @@ const Index = () => {
               <Button size="lg" onClick={handleGetStarted}>
                 Get Started <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button size="lg" variant="outline">
-                Learn More
-              </Button>
+              {/* Learn More button removed */}
             </div>
           </div>
           <div className="md:w-1/2 flex justify-center mt-10 md:mt-0">

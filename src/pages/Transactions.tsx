@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import TransactionHistory from '@/components/Dashboard/TransactionHistory';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +8,18 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Transactions = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedToken, setSelectedToken] = useState('all');
+  const [filteredData, setFilteredData] = useState<any>(null);
+
+  const handleSearch = () => {
+    const filters = {
+      id: searchQuery ? searchQuery : undefined,
+      token: selectedToken !== 'all' ? selectedToken.toUpperCase() : undefined
+    };
+    setFilteredData(filters);
+  };
+
   return (
     <DashboardLayout>
       <div className="mb-6">
@@ -27,10 +39,14 @@ const Transactions = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Input placeholder="Search by transaction ID" />
+              <Input 
+                placeholder="Search by transaction ID" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
             <div>
-              <Select>
+              <Select value={selectedToken} onValueChange={setSelectedToken}>
                 <SelectTrigger>
                   <SelectValue placeholder="Filter by token" />
                 </SelectTrigger>
@@ -43,12 +59,12 @@ const Transactions = () => {
                 </SelectContent>
               </Select>
             </div>
-            <Button className="md:mt-0">Search</Button>
+            <Button className="md:mt-0" onClick={handleSearch}>Search</Button>
           </div>
         </CardContent>
       </Card>
 
-      <TransactionHistory />
+      <TransactionHistory filters={filteredData} />
     </DashboardLayout>
   );
 };

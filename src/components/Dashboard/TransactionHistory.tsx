@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -15,9 +15,16 @@ interface Transaction {
   expiresIn: string;
 }
 
-const TransactionHistory = () => {
+interface TransactionHistoryProps {
+  filters?: {
+    id?: string;
+    token?: string;
+  };
+}
+
+const TransactionHistory = ({ filters }: TransactionHistoryProps) => {
   // Mock transaction data
-  const transactions: Transaction[] = [
+  const allTransactions: Transaction[] = [
     {
       id: 'tx123456',
       token: 'USDT',
@@ -60,6 +67,32 @@ const TransactionHistory = () => {
     }
   ];
 
+  const [transactions, setTransactions] = useState<Transaction[]>(allTransactions);
+
+  // Apply filters when they change
+  useEffect(() => {
+    if (!filters) {
+      setTransactions(allTransactions);
+      return;
+    }
+    
+    let filteredTransactions = [...allTransactions];
+    
+    if (filters.id) {
+      filteredTransactions = filteredTransactions.filter(
+        tx => tx.id.toLowerCase().includes(filters.id!.toLowerCase())
+      );
+    }
+    
+    if (filters.token) {
+      filteredTransactions = filteredTransactions.filter(
+        tx => tx.token === filters.token
+      );
+    }
+    
+    setTransactions(filteredTransactions);
+  }, [filters]);
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'confirmed':
@@ -82,34 +115,40 @@ const TransactionHistory = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Token</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>From</TableHead>
-              <TableHead>To</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Expires In</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {transactions.map((tx) => (
-              <TableRow key={tx.id}>
-                <TableCell className="font-mono text-xs">{tx.id}</TableCell>
-                <TableCell>{tx.token}</TableCell>
-                <TableCell>{tx.amount}</TableCell>
-                <TableCell className="font-mono text-xs">{tx.from}</TableCell>
-                <TableCell className="font-mono text-xs">{tx.to}</TableCell>
-                <TableCell>{tx.timestamp}</TableCell>
-                <TableCell>{getStatusBadge(tx.status)}</TableCell>
-                <TableCell>{tx.expiresIn}</TableCell>
+        {transactions.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID</TableHead>
+                <TableHead>Token</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>From</TableHead>
+                <TableHead>To</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Expires In</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {transactions.map((tx) => (
+                <TableRow key={tx.id}>
+                  <TableCell className="font-mono text-xs">{tx.id}</TableCell>
+                  <TableCell>{tx.token}</TableCell>
+                  <TableCell>{tx.amount}</TableCell>
+                  <TableCell className="font-mono text-xs">{tx.from}</TableCell>
+                  <TableCell className="font-mono text-xs">{tx.to}</TableCell>
+                  <TableCell>{tx.timestamp}</TableCell>
+                  <TableCell>{getStatusBadge(tx.status)}</TableCell>
+                  <TableCell>{tx.expiresIn}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            No transactions found matching your filters.
+          </div>
+        )}
       </CardContent>
     </Card>
   );

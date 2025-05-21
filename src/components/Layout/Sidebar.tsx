@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Wallet, Plus, BarChart, ExternalLink, Settings } from 'lucide-react';
+import { Wallet, Plus, BarChart, ExternalLink, Settings, LayoutDashboard } from 'lucide-react';
 
 const AppSidebar = () => {
   const sidebar = useSidebar();
@@ -17,7 +17,7 @@ const AppSidebar = () => {
   const currentPath = location.pathname;
 
   const menuItems = [
-    { title: 'Dashboard', icon: BarChart, path: '/dashboard' },
+    { title: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
     { title: 'Generate', icon: Plus, path: '/generate' },
     { title: 'Wallets', icon: Wallet, path: '/wallets' },
     { title: 'Transactions', icon: ExternalLink, path: '/transactions' },
