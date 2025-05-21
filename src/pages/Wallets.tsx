@@ -5,7 +5,7 @@ import WalletManager from '@/components/Dashboard/WalletManager';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const Wallets = () => {
@@ -157,6 +157,9 @@ const Wallets = () => {
             <DialogTitle>
               {selectedWallet && walletDetails[selectedWallet as keyof typeof walletDetails].name} Details
             </DialogTitle>
+            <DialogDescription>
+              View detailed information about this wallet's assets and balance
+            </DialogDescription>
           </DialogHeader>
           
           {selectedWallet && (
