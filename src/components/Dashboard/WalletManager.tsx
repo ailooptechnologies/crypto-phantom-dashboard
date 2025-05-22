@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, ExternalLink, MoreVertical, Copy, Trash } from 'lucide-react';
+import { Plus, MoreVertical, Copy, Trash, ArrowRightLeft } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
@@ -28,7 +28,14 @@ const WalletManager = () => {
   const [filteredWallets, setFilteredWallets] = useState(initialWallets);
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddWalletOpen, setIsAddWalletOpen] = useState(false);
+  const [isTransferOpen, setIsTransferOpen] = useState(false);
   const [newWallet, setNewWallet] = useState({ name: '', address: '', network: 'TRC20' });
+  const [transferDetails, setTransferDetails] = useState({
+    fromWallet: '',
+    toWallet: '',
+    amount: '',
+    token: ''
+  });
   const { toast } = useToast();
 
   // Handle search functionality
@@ -102,26 +109,41 @@ const WalletManager = () => {
     });
   };
 
-  // View wallet on explorer
-  const viewOnExplorer = (address: string, network: string) => {
-    let explorerUrl = '';
-    switch (network) {
-      case 'TRC20':
-        explorerUrl = `https://tronscan.org/#/address/${address}`;
-        break;
-      case 'ERC20':
-        explorerUrl = `https://etherscan.io/address/${address}`;
-        break;
-      case 'BTC':
-        explorerUrl = `https://www.blockchain.com/explorer/addresses/btc/${address}`;
-        break;
-      default:
-        explorerUrl = '';
+  // Open transfer dialog with selected wallet
+  const openTransferDialog = (fromWallet: string) => {
+    setTransferDetails({
+      ...transferDetails,
+      fromWallet
+    });
+    setIsTransferOpen(true);
+  };
+
+  // Handle transfer submission
+  const handleTransfer = () => {
+    const { fromWallet, toWallet, amount, token } = transferDetails;
+    
+    if (!fromWallet || !toWallet || !amount || !token) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all transfer details.",
+        variant: "destructive"
+      });
+      return;
     }
     
-    if (explorerUrl) {
-      window.open(explorerUrl, '_blank');
-    }
+    // In a real app, this would call an API to process the transfer
+    toast({
+      title: "Transfer Initiated",
+      description: `${amount} ${token} has been sent from ${fromWallet} to ${toWallet}.`
+    });
+    
+    setIsTransferOpen(false);
+    setTransferDetails({
+      fromWallet: '',
+      toWallet: '',
+      amount: '',
+      token: ''
+    });
   };
 
   return (
@@ -181,9 +203,9 @@ const WalletManager = () => {
                             <Copy className="mr-2 h-4 w-4" />
                             Copy Address
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => viewOnExplorer(wallet.address, wallet.network)}>
-                            <ExternalLink className="mr-2 h-4 w-4" />
-                            View on Explorer
+                          <DropdownMenuItem onClick={() => openTransferDialog(wallet.name)}>
+                            <ArrowRightLeft className="mr-2 h-4 w-4" />
+                            Transfer Crypto
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => removeWallet(wallet.address)} className="text-red-500 focus:text-red-500">
                             <Trash className="mr-2 h-4 w-4" />
@@ -255,6 +277,82 @@ const WalletManager = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAddWalletOpen(false)}>Cancel</Button>
             <Button onClick={handleAddWallet}>Add Wallet</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Transfer Crypto Dialog */}
+      <Dialog open={isTransferOpen} onOpenChange={setIsTransferOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Transfer Crypto</DialogTitle>
+            <DialogDescription>
+              Send cryptocurrency from your wallet to another address.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="from-wallet">From Wallet</Label>
+              <Select 
+                value={transferDetails.fromWallet} 
+                onValueChange={(value) => setTransferDetails({...transferDetails, fromWallet: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Source Wallet" />
+                </SelectTrigger>
+                <SelectContent>
+                  {wallets.map((wallet, idx) => (
+                    <SelectItem key={idx} value={wallet.name}>{wallet.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="to-wallet">To Wallet</Label>
+              <Select 
+                value={transferDetails.toWallet} 
+                onValueChange={(value) => setTransferDetails({...transferDetails, toWallet: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Destination Wallet" />
+                </SelectTrigger>
+                <SelectContent>
+                  {wallets.map((wallet, idx) => (
+                    <SelectItem key={idx} value={wallet.name}>{wallet.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="amount">Amount</Label>
+              <Input 
+                id="amount" 
+                placeholder="Enter amount"
+                value={transferDetails.amount}
+                onChange={(e) => setTransferDetails({...transferDetails, amount: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="token">Token</Label>
+              <Select 
+                value={transferDetails.token} 
+                onValueChange={(value) => setTransferDetails({...transferDetails, token: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Token" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="USDT">USDT</SelectItem>
+                  <SelectItem value="ETH">ETH</SelectItem>
+                  <SelectItem value="BTC">BTC</SelectItem>
+                  <SelectItem value="TRX">TRX</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsTransferOpen(false)}>Cancel</Button>
+            <Button onClick={handleTransfer}>Transfer</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
