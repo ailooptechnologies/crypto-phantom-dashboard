@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +17,8 @@ const TokenGenerator = () => {
   const [walletAddress, setWalletAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const generateTokenMutation = useMutation(generateToken, {
+  const generateTokenMutation = useMutation({
+    mutationFn: generateToken,
     onSuccess: () => {
       toast.success(`${amount} ${tokenType.toUpperCase()} tokens created successfully on ${network.toUpperCase()} network`);
       setIsLoading(false);

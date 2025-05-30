@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,7 +26,10 @@ const WalletManager = () => {
   ];
 
   const queryClient = useQueryClient();
-  const { data: wallets = [], isLoading } = useQuery('wallets', getWallets);
+  const { data: wallets = [], isLoading } = useQuery({
+    queryKey: ['wallets'],
+    queryFn: getWallets
+  });
   const [filteredWallets, setFilteredWallets] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddWalletOpen, setIsAddWalletOpen] = useState(false);
@@ -40,9 +42,11 @@ const WalletManager = () => {
     token: ''
   });
   const { toast } = useToast();
-  const createWalletMutation = useMutation(createWallet, {
+  
+  const createWalletMutation = useMutation({
+    mutationFn: createWallet,
     onSuccess: () => {
-      queryClient.invalidateQueries('wallets');
+      queryClient.invalidateQueries({ queryKey: ['wallets'] });
       setIsAddWalletOpen(false);
       toast({
         title: "Wallet Added",
@@ -51,9 +55,10 @@ const WalletManager = () => {
     }
   });
 
-  const deleteWalletMutation = useMutation(deleteWallet, {
+  const deleteWalletMutation = useMutation({
+    mutationFn: deleteWallet,
     onSuccess: () => {
-      queryClient.invalidateQueries('wallets');
+      queryClient.invalidateQueries({ queryKey: ['wallets'] });
       toast({
         title: "Wallet Removed",
         description: "Wallet has been removed from your list."
