@@ -33,6 +33,7 @@ const TokenGenerator = () => {
     e.preventDefault();
     setIsLoading(true);
     
+  }
 
   return (
     <Card className="w-full shadow-lg border border-border/50 crypto-gradient-bg">
