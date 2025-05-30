@@ -15,6 +15,8 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
+import { getWallets, createWallet, deleteWallet } from '@/lib/api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 const WalletManager = () => {
   // Demo wallets initial data
@@ -24,8 +26,9 @@ const WalletManager = () => {
     { name: 'Cold Storage', address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh', network: 'BTC', balance: '0.3 BTC' },
   ];
 
-  const [wallets, setWallets] = useState(initialWallets);
-  const [filteredWallets, setFilteredWallets] = useState(initialWallets);
+  const queryClient = useQueryClient();
+  const { data: wallets = [], isLoading } = useQuery('wallets', getWallets);
+  const [filteredWallets, setFilteredWallets] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddWalletOpen, setIsAddWalletOpen] = useState(false);
   const [isTransferOpen, setIsTransferOpen] = useState(false);
@@ -37,6 +40,26 @@ const WalletManager = () => {
     token: ''
   });
   const { toast } = useToast();
+  const createWalletMutation = useMutation(createWallet, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('wallets');
+      setIsAddWalletOpen(false);
+      toast({
+        title: "Wallet Added",
+        description: "New wallet has been added successfully."
+      });
+    }
+  });
+
+  const deleteWalletMutation = useMutation(deleteWallet, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('wallets');
+      toast({
+        title: "Wallet Removed",
+        description: "Wallet has been removed from your list."
+      });
+    }
+  });
 
   // Handle search functionality
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,11 +67,11 @@ const WalletManager = () => {
     setSearchQuery(query);
     
     if (!query) {
-      setFilteredWallets(wallets);
+      setFilteredWallets(wallets.data);
       return;
     }
     
-    const filtered = wallets.filter(
+    const filtered = wallets.data.filter(
       wallet => 
         wallet.name.toLowerCase().includes(query) || 
         wallet.address.toLowerCase().includes(query)
@@ -57,7 +80,7 @@ const WalletManager = () => {
   };
 
   // Add new wallet
-  const handleAddWallet = () => {
+  const handleAddWallet = async () => {
     if (!newWallet.name || !newWallet.address) {
       toast({
         title: "Validation Error",
@@ -67,20 +90,6 @@ const WalletManager = () => {
       return;
     }
 
-    const updatedWallets = [
-      ...wallets, 
-      { 
-        ...newWallet, 
-        balance: newWallet.network === 'TRC20' ? '0 USDT' : 
-                 newWallet.network === 'ERC20' ? '0 ETH' : 
-                 newWallet.network === 'BTC' ? '0 BTC' : '0'
-      }
-    ];
-    
-    setWallets(updatedWallets);
-    setFilteredWallets(updatedWallets);
-    setNewWallet({ name: '', address: '', network: 'TRC20' });
-    setIsAddWalletOpen(false);
     
     toast({
       title: "Wallet Added",

@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';
+import { generateToken } from '@/lib/api';
+import { useMutation } from '@tanstack/react-query';
 
 const TokenGenerator = () => {
   const [amount, setAmount] = useState('1000');
@@ -16,15 +18,21 @@ const TokenGenerator = () => {
   const [walletAddress, setWalletAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const generateTokenMutation = useMutation(generateToken, {
+    onSuccess: () => {
+      toast.success(`${amount} ${tokenType.toUpperCase()} tokens created successfully on ${network.toUpperCase()} network`);
+      setIsLoading(false);
+    },
+    onError: () => {
+      toast.error('Failed to generate tokens');
+      setIsLoading(false);
+    }
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    setTimeout(() => {
-      toast.success(`${amount} dummy ${tokenType.toUpperCase()} tokens created successfully on ${network.toUpperCase()} network`);
-      setIsLoading(false);
-    }, 2000);
-  };
 
   return (
     <Card className="w-full shadow-lg border border-border/50 crypto-gradient-bg">

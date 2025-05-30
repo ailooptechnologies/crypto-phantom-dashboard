@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { login } from '@/lib/api';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
@@ -13,19 +14,24 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // In a real app, this would be an API call to authenticate
-    setTimeout(() => {
-      // Demo login - in real app, validate with backend
-      if (username === 'admin' && password === 'admin') {
-        localStorage.setItem('authToken', 'demo-token');
+    try {
+      const response = await login(username, password);
+      if (response.data.token) {
+        localStorage.setItem('authToken', response.data.token);
         toast.success('Login successful');
         navigate('/dashboard');
-      } else {
-        toast.error('Invalid credentials');
+      }
+    } catch (error) {
+      toast.error('Invalid credentials');
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
       }
       setIsLoading(false);
     }, 1500);
