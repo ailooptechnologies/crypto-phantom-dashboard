@@ -32,10 +32,6 @@ const LoginForm = () => {
       setIsLoading(false);
     }
   };
-      }
-      setIsLoading(false);
-    }, 1500);
-  };
 
   return (
     <Card className="w-full max-w-md mx-auto crypto-gradient-bg shadow-lg border border-border/50">
