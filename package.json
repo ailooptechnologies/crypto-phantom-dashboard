@@ -6,6 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "postinstall": "prisma generate",
     "lint": "eslint .",
     "preview": "vite preview",
     "server:dev": "npx tsx watch src/server/src/index.ts",
