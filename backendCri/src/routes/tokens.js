@@ -1,5 +1,5 @@
-const express = require('express');
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
+import express from 'express';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -92,8 +92,7 @@ router.post('/transfer', async (req, res) => {
       return res.status(404).json({ message: 'Token not found' });
     }
 
-    // Create transfer record (in a real app, this would be more complex)
-    // For demo purposes, we'll just create a new token in the destination wallet
+    // Create transfer record
     const newToken = await prisma.token.create({
       data: {
         symbol: token.symbol,
@@ -110,4 +109,4 @@ router.post('/transfer', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

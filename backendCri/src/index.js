@@ -1,11 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const { rateLimit } = require('express-rate-limit');
-const authRoutes = require('./routes/auth');
-const walletRoutes = require('./routes/wallets');
-const tokenRoutes = require('./routes/tokens');
-const { authenticateToken } = require('./middleware/auth');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { rateLimit } from 'express-rate-limit';
+import authRoutes from './routes/auth.js';
+import walletRoutes from './routes/wallets.js';
+import tokenRoutes from './routes/tokens.js';
+import { authenticateToken } from './middleware/auth.js';
 
 dotenv.config();
 

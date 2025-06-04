@@ -1,7 +1,7 @@
-const express = require('express');
-const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import { PrismaClient } from '@prisma/client';
+import bcryptjs from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import express from 'express';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -19,7 +19,7 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'Username already exists' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcryptjs.hash(password, 10);
     const user = await prisma.user.create({
       data: {
         username,
@@ -47,7 +47,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const validPassword = await bcrypt.compare(password, user.password);
+    const validPassword = await bcryptjs.compare(password, user.password);
     if (!validPassword) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -59,4 +59,4 @@ router.post('/login', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
