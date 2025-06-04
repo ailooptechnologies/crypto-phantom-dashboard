@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate --schema src/server/prisma/schema.prisma",
     "lint": "eslint .",
     "preview": "vite preview",
     "server:dev": "npx tsx watch src/server/src/index.ts",
