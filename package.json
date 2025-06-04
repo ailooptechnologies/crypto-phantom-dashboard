@@ -10,8 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server:dev": "npx tsx watch src/server/src/index.ts",
-    "server:build": "tsc -p src/server/tsconfig.json",
-    "server:start": "node dist/server/src/index.js"
+    "server:build": "cd src/server && tsc",
+    "server:start": "node dist/src/index.js"
   },
   "dependencies": {
     "axios": "^1.6.7",
