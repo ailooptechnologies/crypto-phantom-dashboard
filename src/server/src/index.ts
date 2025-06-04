@@ -2,15 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { rateLimit } from 'express-rate-limit';
-import path from 'path';
 import authRoutes from './routes/auth';
 import walletRoutes from './routes/wallets';
 import tokenRoutes from './routes/tokens';
-import { errorHandler } from './middleware/auth';
+import { authenticateToken } from './middleware/auth';
 
-dotenv.config({
-  path: path.resolve(__dirname, '../../server/.env')
-});
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -28,8 +25,8 @@ app.use(limiter);
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/wallets', errorHandler, walletRoutes);
-app.use('/api/tokens', errorHandler, tokenRoutes);
+app.use('/api/wallets', authenticateToken, walletRoutes);
+app.use('/api/tokens', authenticateToken, tokenRoutes);
 
 app.listen(port, () => {
   console.log(`🚀 Server is running on http://localhost:${port}`);
