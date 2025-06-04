@@ -1,11 +1,12 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import { AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
 // Get all wallets for user
-router.get('/', async (req: any, res) => {
+router.get('/', async (req: AuthRequest, res) => {
   try {
     const wallets = await prisma.wallet.findMany({
       where: { userId: req.user.id },
@@ -18,7 +19,7 @@ router.get('/', async (req: any, res) => {
 });
 
 // Create wallet
-router.post('/', async (req: any, res) => {
+router.post('/', async (req: AuthRequest, res) => {
   try {
     const { name, address, network } = req.body;
     
@@ -46,7 +47,7 @@ router.post('/', async (req: any, res) => {
 });
 
 // Delete wallet
-router.delete('/:id', async (req: any, res) => {
+router.delete('/:id', async (req: AuthRequest, res) => {
   try {
     const wallet = await prisma.wallet.findFirst({
       where: {

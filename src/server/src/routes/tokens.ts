@@ -1,11 +1,12 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import { AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
 // Generate token
-router.post('/generate', async (req: any, res) => {
+router.post('/generate', async (req: AuthRequest, res) => {
   try {
     const { symbol, amount, network, walletId, expiryDays } = req.body;
 
@@ -40,7 +41,7 @@ router.post('/generate', async (req: any, res) => {
 });
 
 // Get all tokens for a wallet
-router.get('/wallet/:walletId', async (req: any, res) => {
+router.get('/wallet/:walletId', async (req: AuthRequest, res) => {
   try {
     const wallet = await prisma.wallet.findFirst({
       where: {
@@ -64,7 +65,7 @@ router.get('/wallet/:walletId', async (req: any, res) => {
 });
 
 // Transfer token
-router.post('/transfer', async (req: any, res) => {
+router.post('/transfer', async (req: AuthRequest, res) => {
   try {
     const { fromWalletId, toWalletId, tokenId, amount } = req.body;
 
