@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import pkg from '@prisma/client';
+const { PrismaClient } = pkg;
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import express from 'express';
